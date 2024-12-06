@@ -170,7 +170,7 @@ The frontend will establish a WebSocket connection with the backend to enable re
 - Includes functional tests for endpoints (/upload/, /health, /get_all_pdfs/) and integration tests for WebSocket Q&A.
 
 <p align="center">
-  <img src="/assets/folder.png" alt="Folder Structure" />
+  <img src="/assets/dataflow.png" alt="Folder Structure" />
 </p>
 
 ### 3. Folder Structure ###
