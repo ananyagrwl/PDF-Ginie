@@ -1,4 +1,4 @@
-# PDF QA Backend Service
+# SmartPDF
 
 This backend service enables users to upload PDF documents and ask questions about the content in real time using NLP capabilities. The service processes the documents, extracts their content, and responds to user queries via WebSocket communication.
 
@@ -17,19 +17,19 @@ Ensure the following are installed:
 - SQLite (pre-installed with Python) or any database of your choice
 
 ### 1. Clone the Repository
-```bash
+```
 git clone <repository_url>
 cd <repository_directory>
 ```
 
 ### 2. Set Up the Virtual Environment
-```bash
+```
 conda create -n env
-conda activate
+conda activate env
 ```
 
 ### 3. Install Dependencies
-```bash
+```
 pip install -r requirements.txt
 ```
 
@@ -40,8 +40,13 @@ GEMINI_API_KEY=<Your_Google_Generative_AI_API_Key>
 ```
 
 ### 5. Run the Application
-```bash
+```
 uvicorn main:app --reload
+```
+
+### 5. Run the Tests
+```
+python unit_testcase.py
 ```
 
 The application will be available at `http://127.0.0.1:8000`.
@@ -131,18 +136,39 @@ The service enforces rate limiting to control excessive requests and ensure fair
 ## Architectural Overview ##
 
 ### 1. Core Components ###
-- **FastAPI**: For building RESTful and WebSocket APIs.
-- **LangChain**: For NLP capabilities, using FAISS as a vector store.
-- **SQLite**: To store document metadata and text content.
+#### Frontend WebSocket Integration ####
+The frontend will establish a WebSocket connection with the backend to enable real-time question-answering functionality. Users will send the pdf_id and their questions through this connection and receive responses dynamically without reloading the page.
+
+#### Backend ####
+- **FastAPI**: Handles REST API and WebSocket endpoints for uploading PDFs and real-time Q&A.
+- **LangChain and FAISS**: Powers NLP-based question answering and efficient text retrieval.
+- **PyPDF** :  To extract text content from uploaded PDF files.
+- **SQLite Database**: To store document metadata and text content.
 - **Local File Storage** : To save uploaded PDFs.
+- **Rate Limiting**: Prevents abuse by limiting client requests.
+- **Pytest**: Ensures backend reliability with automated test cases
 
 ### 2. Data Flow ###
 1. **PDF Upload**: 
 - Users upload PDFs via the POST /upload/ endpoint.
-- Text is extracted and stored in the SQLite database.
+- Extracts text content using PyPDF2.
+- Stores the text and metadata (pdf_id, filename, upload date) in the SQLite database.
+- Returns a unique pdf_id to the user.
 2. **Real-Time Q&A**: 
-- Users connect via WebSocket and provide a pdf_id and a question.
-- Extracted text is split into chunks, indexed with FAISS, and used for NLP-based question answering.
+- Users connect to the WebSocket endpoint /ws/qa/ with a pdf_id and a question.
+- Backend retrieves the stored text content for the given pdf_id from the SQLite database.
+- Text is split into chunks using LangChain's RecursiveCharacterTextSplitter.
+- FAISS indexes these chunks for efficient search and retrieval.
+***LangChain LLM***:
+- Generates an answer by combining retrieved text chunks with the question.
+- A prompt template ensures that the response is concise and context-aware.
+- Backend sends the generated answer to the user in real time.
+3. **Testing and Quality Assurance**: 
+***Pytest***
+- Automated test cases verify backend functionality, including file uploads, database queries, rate limiting, and WebSocket communication.
+***Test Suite***:
+- Includes functional tests for endpoints (/upload/, /health, /get_all_pdfs/) and integration tests for WebSocket Q&A.
+
 
 <!-- ### 3. Folder Structure ###
 
