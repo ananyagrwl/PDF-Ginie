@@ -149,6 +149,9 @@ The frontend will establish a WebSocket connection with the backend to enable re
 - **Pytest**: Ensures backend reliability with automated test cases
 
 ### 2. Data Flow ###
+<p align="center">
+  <img src="/assets/folder.png" alt="Folder Structure" width="50"/>
+</p>
 1. **PDF Upload**: 
 - Users upload PDFs via the POST /upload/ endpoint.
 - Extracts text content using PyPDF2.
