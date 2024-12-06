@@ -5,3 +5,5 @@ PyPDF2
 fastapi-limiter
 langchain[all]
 python-dotenv
+faiss-cpu
+pytest
