@@ -4,3 +4,4 @@ pydantic
 PyPDF2
 fastapi-limiter
 langchain
+python-dotenv
