@@ -8,3 +8,4 @@ langchain_community
 python-dotenv
 faiss-cpu
 pytest
+langchain-google-genai

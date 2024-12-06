@@ -53,6 +53,8 @@ The application will be available at `http://127.0.0.1:8000`.
 
 ## API Documentation
 
+visit `http://127.0.0.1:8000/docs` for checking FastAPI documentation
+
 ### 1. **PDF Upload**
 - **Endpoint**: `POST /upload/`
 - **Description**: Upload a PDF document for text extraction and storage.
