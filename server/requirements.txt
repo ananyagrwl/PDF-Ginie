@@ -3,7 +3,8 @@ uvicorn
 pydantic
 PyPDF2
 fastapi-limiter
-langchain[all]
+langchain
+langchain_community
 python-dotenv
 faiss-cpu
 pytest
