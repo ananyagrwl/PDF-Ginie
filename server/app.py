@@ -17,6 +17,10 @@ load_dotenv()
 
 app = FastAPI()
 
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the app!"}
+
 # In-memory store for tracking request timestamps
 request_timestamps = defaultdict(list)
 RATE_LIMIT = 5 
