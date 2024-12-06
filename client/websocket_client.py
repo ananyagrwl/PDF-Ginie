@@ -11,7 +11,6 @@ async def test_websocket():
         # Send the JSON message to the WebSocket server
         await websocket.send(json.dumps({"pdf_id": pdf_id, "question": question}))
 
-        # Wait for and print the response
         response = await websocket.recv()
         print("Response:", response)
 

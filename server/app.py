@@ -1,5 +1,4 @@
 from fastapi import FastAPI, WebSocket, UploadFile, HTTPException, Request
-from fastapi.responses import JSONResponse
 import sqlite3
 import uuid
 import os
@@ -10,7 +9,6 @@ from dotenv import load_dotenv
 from langchain_core.prompts import PromptTemplate
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain.embeddings.base import Embeddings
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain.chains import RetrievalQA
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -21,8 +19,8 @@ app = FastAPI()
 
 # In-memory store for tracking request timestamps
 request_timestamps = defaultdict(list)
-RATE_LIMIT = 5  # Allow 5 requests per minute
-TIME_WINDOW = 60  # 60 seconds time window
+RATE_LIMIT = 5 
+TIME_WINDOW = 60
 
 # Initialize LLM and embeddings
 model = ChatGoogleGenerativeAI(
@@ -72,7 +70,7 @@ async def upload_pdf(file: UploadFile, request: Request):
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="File must be a PDF")
 
-    pdf_id = str(uuid.uuid4()) # generates a unique id
+    pdf_id = str(uuid.uuid4())
     file_location = f"./uploaded_pdfs/{pdf_id}.pdf"
     os.makedirs("./uploaded_pdfs", exist_ok=True)
     
@@ -103,64 +101,19 @@ async def health(request: Request):
         raise HTTPException(status_code=429, detail="Rate limit exceeded. Try again later.")
     return {"status": "ok"}
 
-# WebSocket Q&A Endpoint
-# @app.websocket("/ws/qa/")
-# async def websocket_endpoint(websocket: WebSocket):
-#     await websocket.accept()
-#     try:
-#         data = await websocket.receive_json()
-#         pdf_id = data.get("pdf_id")
-#         question = data.get("question")
-
-#         # Retrieve document text from the database
-#         with get_db() as conn:
-#             result = conn.execute("SELECT text_content FROM documents WHERE id = ?", (pdf_id,)).fetchone()
-        
-#         if not result:
-#             await websocket.send_json({"error": "Document not found."})
-#             return
-#         document_text = result["text_content"]
-#         # Split text and embed
-#         text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=1000)
-#         texts = text_splitter.split_text(document_text)
-#         vector_index = FAISS.from_texts(texts, embeddings).as_retriever(search_kwargs={"k": 5})  # FAISS used here
-
-#         # Create QA chain
-#         template = """Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. Keep the answer as concise as possible.
-#         {context}
-#         Question: {question}
-#         Helpful Answer:"""
-#         QA_CHAIN_PROMPT = PromptTemplate.from_template(template)
-#         qa_chain = RetrievalQA.from_chain_type(
-#             model,
-#             retriever=vector_index,
-#             return_source_documents=True,
-#             chain_type_kwargs={"prompt": QA_CHAIN_PROMPT},
-#         )
-
-#         # Generate the answer
-#         result = qa_chain({"query": question})
-#         answer = result.get("result", "I don't know. Thanks for asking!")
-#         await websocket.send_json({"answer": answer})
-#     except Exception as e:
-#         await websocket.send_json({"error": str(e)})
-#         await websocket.close()
-
 @app.websocket("/ws/qa/")
 async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()  # Accept the WebSocket connection
+    await websocket.accept()
     try:
-        while True:  # Keep the WebSocket connection alive for multiple exchanges
-            # Receive a question from the client
+        while True:  
             data = await websocket.receive_json()
-            client_ip = websocket.client.host  # Get the client's IP address
+            client_ip = websocket.client.host 
             
             # Apply rate limiting for each request
             if is_rate_limited(client_ip):
                 await websocket.send_json({"error": "Rate limit exceeded. Try again later."})
-                continue  # Skip processing this message and wait for the next one
-            
-            # Extract the 'pdf_id' and 'question' from the incoming data
+                continue 
+
             pdf_id = data.get("pdf_id")
             question = data.get("question")
 
@@ -179,7 +132,6 @@ async def websocket_endpoint(websocket: WebSocket):
             texts = text_splitter.split_text(document_text)
             vector_index = FAISS.from_texts(texts, embeddings).as_retriever(search_kwargs={"k": 5})  # FAISS used here
 
-            # Create the QA chain
             template = """Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. Keep the answer as concise as possible.
             {context}
             Question: {question}
@@ -192,15 +144,12 @@ async def websocket_endpoint(websocket: WebSocket):
                 chain_type_kwargs={"prompt": QA_CHAIN_PROMPT},
             )
 
-            # Generate the answer
             result = qa_chain({"query": question})
             answer = result.get("result", "I don't know. Thanks for asking!")
-            
-            # Send the generated answer back to the client
+
             await websocket.send_json({"answer": answer})
 
     except Exception as e:
-        # Handle unexpected exceptions gracefully
         await websocket.send_json({"error": str(e)})
         await websocket.close()
 
@@ -208,9 +157,6 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @app.get("/get_all_pdfs/")
 async def get_all_pdfs(request: Request):
-    """
-    Retrieve details of all stored PDFs from the SQLite database.
-    """
     client_ip = request.client.host
     if is_rate_limited(client_ip):
         raise HTTPException(status_code=429, detail="Rate limit exceeded. Try again later.")

@@ -12,20 +12,12 @@ def client():
     with TestClient(app) as c:
         yield c
 
-
 def test_health():
-    """
-    Test the health endpoint.
-    """
     response = requests.get(f"{base_url}/health")
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
-
 def test_upload_pdf_invalid_type():
-    """
-    Test uploading an invalid file type.
-    """
     text_content = b"This is a text file"
     files = {"file": ("example.txt", text_content, "text/plain")}
     response = requests.post(f"{base_url}/upload/", files=files)
@@ -33,20 +25,12 @@ def test_upload_pdf_invalid_type():
     assert response.json() == {"detail": "File must be a PDF"}
 
 def test_get_all_pdfs():
-    """
-    Test retrieving all uploaded PDFs.
-    """
     response = requests.get(f"{base_url}/get_all_pdfs/")
     assert response.status_code == 200
     assert "pdfs" in response.json()
 
-
 def test_websocket_qa():
-    """
-    Test WebSocket connection and functionality.
-    """
-    import websocket  # Use websocket-client library for WebSocket testing
-
+    import websocket
     uri = "ws://127.0.0.1:8000/ws/qa/"
     ws = websocket.create_connection(uri)
     ws.send('{"pdf_id": "invalid_id", "question": "What is this?"}')
