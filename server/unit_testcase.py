@@ -5,7 +5,6 @@ from app import app
 
 base_url = "http://localhost:8000"
 
-
 # Fixture to provide a TestClient for HTTP tests
 @pytest.fixture(scope="module")
 def client():

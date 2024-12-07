@@ -46,14 +46,17 @@ uvicorn main:app --reload
 
 ### 5. Run the Tests
 ```
-python unit_testcase.py
+pytest unit_testcase.py
 ```
 
 The application will be available at `http://127.0.0.1:8000`.
 
+**Deployed Link** : `https://smartpdf-1.onrender.com/`
+
 ## API Documentation
 
 visit `http://127.0.0.1:8000/docs` for checking FastAPI documentation
+**Documentation Link** : `https://drive.google.com/file/d/1TW846HV-Oa-RwluhbaTuHK7eC1p3jsBZ/view?usp=sharing`
 
 ### 1. **PDF Upload**
 - **Endpoint**: `POST /upload/`
@@ -132,8 +135,8 @@ The service enforces rate limiting to control excessive requests and ensure fair
 - **Limit** : Maximum 5 requests per minute per client.
 - **Scope** : Applied to both REST API endpoints and WebSocket connections.
 - **Response** : Clients exceeding the limit receive:
-      - ***REST API*** : HTTP 429 error with `Rate limit exceeded. Try again later`.
-      - ***WebSocket*** : JSON message with `{"error": "Rate limit exceeded. Try again later."}`
+      - **REST API** : HTTP 429 error with `Rate limit exceeded. Try again later`.
+      - **WebSocket** : JSON message with `{"error": "Rate limit exceeded. Try again later."}`
 
 ## Architectural Overview ##
 
@@ -143,6 +146,7 @@ The frontend will establish a WebSocket connection with the backend to enable re
 
 #### Backend ####
 - **FastAPI**: Handles REST API and WebSocket endpoints for uploading PDFs and real-time Q&A.
+- **Retrieval-Augmented Generation (RAG)**: RAG combines document retrieval with generative models to ensure responses are accurate, context-aware, and derived directly from the uploaded PDF content.
 - **LangChain and FAISS**: Powers NLP-based question answering and efficient text retrieval.
 - **PyPDF** :  To extract text content from uploaded PDF files.
 - **SQLite Database**: To store document metadata and text content.
@@ -161,14 +165,14 @@ The frontend will establish a WebSocket connection with the backend to enable re
 - Backend retrieves the stored text content for the given pdf_id from the SQLite database.
 - Text is split into chunks using LangChain's RecursiveCharacterTextSplitter.
 - FAISS indexes these chunks for efficient search and retrieval.
-***LangChain LLM***:
+**LangChain LLM**:
 - Generates an answer by combining retrieved text chunks with the question.
 - A prompt template ensures that the response is concise and context-aware.
 - Backend sends the generated answer to the user in real time.
 3. **Testing and Quality Assurance**: 
-***Pytest***
+**Pytest**
 - Automated test cases verify backend functionality, including file uploads, database queries, rate limiting, and WebSocket communication.
-***Test Suite***:
+**Test Suite**:
 - Includes functional tests for endpoints (/upload/, /health, /get_all_pdfs/) and integration tests for WebSocket Q&A.
 
 <p align="center">
