@@ -1,6 +1,6 @@
 # SmartPDF
 
-This backend service enables users to upload PDF documents and ask questions about the content in real time using NLP capabilities. The service processes the documents, extracts their content, and responds to user queries via WebSocket communication.
+This backend service enables users to upload PDF documents and ask questions about the content in real time using **Retrieval-Augmented Generation (RAG)** and **NLP** capabilities. By combining document retrieval with generative models, SmartPDF ensures that responses are accurate, context-aware, and grounded in the uploaded content. The service processes the documents, extracts their content, and responds to user queries via **WebSocket communication**.
 
 ## Features
 - **PDF Upload**: Upload and store PDF documents, with text extraction for processing.
