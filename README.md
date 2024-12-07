@@ -165,15 +165,13 @@ The frontend will establish a WebSocket connection with the backend to enable re
 - Backend retrieves the stored text content for the given pdf_id from the SQLite database.
 - Text is split into chunks using LangChain's RecursiveCharacterTextSplitter.
 - FAISS indexes these chunks for efficient search and retrieval.
-**LangChain LLM**:
+- **LangChain LLM**:
 - Generates an answer by combining retrieved text chunks with the question.
 - A prompt template ensures that the response is concise and context-aware.
 - Backend sends the generated answer to the user in real time.
 3. **Testing and Quality Assurance**: 
-**Pytest**
-- Automated test cases verify backend functionality, including file uploads, database queries, rate limiting, and WebSocket communication.
-**Test Suite**:
-- Includes functional tests for endpoints (/upload/, /health, /get_all_pdfs/) and integration tests for WebSocket Q&A.
+- **Pytest**: Automated test cases verify backend functionality, including file uploads, database queries, rate limiting, and WebSocket communication.
+- **Test Suite**: Includes functional tests for endpoints (/upload/, /health, /get_all_pdfs/) and integration tests for WebSocket Q&A.
 
 <p align="center">
   <img src="/assets/dataflow.png" alt="Folder Structure" />
